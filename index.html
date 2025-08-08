@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Колесо Вопросов</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at center, #0a1929 0%, #050f1a 70%);
+            color: #e0f7ff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 15% 25%, rgba(79, 195, 247, 0.15) 0%, transparent 25%),
+                radial-gradient(circle at 85% 15%, rgba(240, 98, 146, 0.15) 0%, transparent 25%),
+                radial-gradient(circle at 70% 80%, rgba(79, 195, 247, 0.1) 0%, transparent 30%),
+                radial-gradient(circle at 30% 70%, rgba(240, 98, 146, 0.1) 0%, transparent 30%),
+                radial-gradient(circle at 50% 40%, rgba(79, 195, 247, 0.08) 0%, transparent 35%);
+            z-index: -1;
+            filter: blur(20px);
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 30px;
+            background: linear-gradient(to right, #4fc3f7, #f06292);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(79, 195, 247, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 0 auto 40px;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            border: 15px solid #4fc3f7;
+            box-shadow:
+                0 0 30px rgba(79, 195, 247, 0.7),
+                inset 0 0 50px rgba(0, 0, 0, 0.4);
+            background:
+                radial-gradient(circle at center, #1a2434 0%, #121a24 100%),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="2"/></svg>');
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+        }
+
+        .segment {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: bottom right;
+            left: 0;
+            top: 0;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            overflow: hidden;
+            background: rgba(74, 157, 227, 0.3);
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 50%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .segment:nth-child(odd) {
+            background: rgba(255, 126, 185, 0.3);
+        }
+
+        .segment-text {
+            transform: rotate(22.5deg);
+            margin-bottom: 60px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+            font-size: 16px;
+            text-align: center;
+            width: 120px;
+            font-weight: 600;
+            line-height: 1.3;
+            transform-origin: bottom left;
+        }
+
+        .pointer {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-top: 50px solid #f06292;
+            z-index: 10;
+            filter: drop-shadow(0 0 10px rgba(240, 98, 146, 0.7));
+        }
+
+        .spin-btn {
+            background: linear-gradient(45deg, #f06292, #ec4899);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            letter-spacing: 1px;
+        }
+
+        .spin-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.6);
+        }
+
+        .spin-btn:active {
+            transform: translateY(1px);
+        }
+
+        .result-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            background: rgba(10, 25, 41, 0.7);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(79, 195, 247, 0.3);
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: fixed;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            z-index: 100;
+        }
+
+        .result-container.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .question {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #4fc3f7;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+        }
+
+        .answer {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #e0f7ff;
+            text-align: left;
+            padding: 20px;
+            border-left: 3px solid #f06292;
+            background: rgba(5, 15, 25, 0.4);
+            border-radius: 0 10px 10px 0;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+
+        .answer-cursor {
+            display: inline-block;
+            width: 3px;
+            height: 1.2em;
+            background-color: #f06292;
+            margin-left: 3px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .fading {
+            opacity: 0 !important;
+            transition: opacity 2s ease-in-out !important;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @media (max-width: 600px) {
+            .wheel-container {
+                width: 300px;
+                height: 300px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .segment-text {
+                font-size: 14px;
+                margin-bottom: 40px;
+                width: 90px;
+            }
+
+            .result-container {
+                width: 90%;
+                padding: 20px;
+            }
+
+            .question {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Колесо Вопросов</h1>
+
+        <div class="wheel-container" id="wheelContainer">
+            <div class="wheel" id="wheel">
+                <!-- Сегменты колеса будут добавлены через JavaScript -->
+            </div>
+            <div class="pointer"></div>
+        </div>
+
+        <button class="spin-btn floating" id="spinBtn">КРУТИТЬ КОЛЕСО</button>
+
+        <div class="result-container" id="resultContainer">
+            <div class="question" id="question"></div>
+            <div class="answer" id="answer"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const wheel = document.getElementById('wheel');
+            const spinBtn = document.getElementById('spinBtn');
+            const wheelContainer = document.getElementById('wheelContainer');
+            const resultContainer = document.getElementById('resultContainer');
+            const questionEl = document.getElementById('question');
+            const answerEl = document.getElementById('answer');
+
+            // Вопросы (одним словом)
+            const questions = [
+                "любовь",
+                "дружба",
+                "школа",
+                "университет",
+                "блог",
+                "испм",
+                "еда",
+                "город"
+            ];
+
+            // Ответы на вопросы
+            const answers = [
+                "Любовь - это самое сильное чувство, которое связывает людей. Она может быть романтической, родительской, дружеской или к любому объекту. Любовь вдохновляет, поддерживает и делает жизнь ярче.",
+                "Дружба - это особая связь между людьми, основанная на доверии, взаимопонимании и поддержке. Настоящие друзья всегда будут рядом в трудную минуту и разделят с вами радости жизни.",
+                "Школа - это важный этап в жизни каждого человека. Здесь мы получаем знания, учимся общаться, развиваем личность и готовимся к взрослой жизни. Школьные годы незабываемы и формируют наше будущее.",
+                "Университет - это следующий шаг после школы, где можно получить профессиональное образование. Здесь раскрываются таланты, формируются карьерные цели и создаются прочные дружеские связи.",
+                "Блог - это современный способ самовыражения и обмена информацией. Через блог можно делиться своими мыслями, опытом, знаниями и находить единомышленников по всему миру.",
+                "ИСПМ (Институт системного программирования) - это научно-образовательный центр, где разрабатываются передовые технологии в области программирования и информационных систем. Здесь рождаются инновации будущего.",
+                "Еда - это не просто способ утолить голод. Это целая культура, объединяющая людей, передающая традиции и дарящая удовольствие. Каждая кухня мира уникальна и отражает особенности региона.",
+                "Город - это сложный организм, где переплетаются судьбы тысяч людей. Здесь рождаются идеи, создаются шедевры, развиваются технологии и формируется будущее человечества."
+            ];
+
+            // Создание сегментов колеса
+            function createWheelSegments() {
+                const segmentAngle = 360 / questions.length;
+
+                questions.forEach((q, index) => {
+                    const segment = document.createElement('div');
+                    segment.className = 'segment';
+                    segment.style.transform = `rotate(${index * segmentAngle}deg)`;
+
+                    const text = document.createElement('div');
+                    text.className = 'segment-text';
+                    text.textContent = q;
+
+                    segment.appendChild(text);
+                    wheel.appendChild(segment);
+                });
+            }
+
+            createWheelSegments();
+
+            // Функция вращения колеса
+            function spinWheel() {
+                // Скрываем кнопку
+                spinBtn.classList.add('hidden');
+
+                // Генерируем случайный угол (5-10 полных оборотов + случайный сегмент)
+                const segmentAngle = 360 / questions.length;
+                const extraRotations = 5 + Math.floor(Math.random() * 6); // 5-10 полных оборотов
+                const randomSegment = Math.floor(Math.random() * questions.length);
+                const targetAngle = extraRotations * 360 + (360 - (randomSegment * segmentAngle + segmentAngle/2));
+
+                // Применяем вращение
+                wheel.style.transform = `rotate(${targetAngle}deg)`;
+
+                // После завершения вращения показываем результат
+                setTimeout(() => {
+                    showResult(randomSegment);
+                }, 4000);
+            }
+
+            // Эффект печатания текста
+            function typeText(element, text, speed = 50) {
+                let i = 0;
+                element.innerHTML = '';
+
+                // Создаем курсор
+                const cursor = document.createElement('span');
+                cursor.className = 'answer-cursor';
+                element.appendChild(cursor);
+
+                function type() {
+                    if (i < text.length) {
+                        element.insertBefore(document.createTextNode(text.charAt(i)), cursor);
+                        i++;
+                        setTimeout(type, speed);
+                    } else {
+                        // Удаляем курсор после завершения печати
+                        element.removeChild(cursor);
+                    }
+                }
+
+                type();
+            }
+
+            // Показ результата
+            function showResult(index) {
+                const question = questions[index];
+                const answer = answers[index];
+
+                // Устанавливаем вопрос
+                questionEl.textContent = question;
+
+                // Начинаем плавное исчезновение колеса
+                wheelContainer.classList.add('fading');
+
+                // Показываем контейнер результата (вопрос поднимается вверх)
+                setTimeout(() => {
+                    resultContainer.classList.add('show');
+
+                    // После появления вопроса показываем ответ с эффектом печатания
+                    setTimeout(() => {
+                        typeText(answerEl, answer, 50); // Скорость печатания 50 мс
+                    }, 1500);
+                }, 2000);
+            }
+
+            // Обработчик клика по кнопке
+            spinBtn.addEventListener('click', spinWheel);
+        });
+    </script>
+</body>
+</html>
+
