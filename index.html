@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Колесо Вопросов</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,7 +13,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Cormorant Garamond', serif;
             background: radial-gradient(circle at center, #0a1929 0%, #050f1a 70%);
             color: #e0f7ff;
             min-height: 100vh;
@@ -49,7 +50,7 @@
         }
 
         h1 {
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             margin-bottom: 30px;
             background: linear-gradient(to right, #4fc3f7, #f06292);
             -webkit-background-clip: text;
@@ -57,6 +58,8 @@
             color: transparent;
             text-shadow: 0 0 15px rgba(79, 195, 247, 0.3);
             letter-spacing: 1px;
+            font-weight: 600;
+            text-transform: uppercase;
         }
 
         .wheel-container {
@@ -64,7 +67,6 @@
             width: 400px;
             height: 400px;
             margin: 0 auto 40px;
-            transition: opacity 1.5s ease-in-out;
         }
 
         .wheel {
@@ -73,14 +75,30 @@
             border-radius: 50%;
             position: relative;
             overflow: hidden;
-            border: 15px solid #4fc3f7;
+            border: 10px solid rgba(100, 181, 246, 0.9);
             box-shadow:
-                0 0 30px rgba(79, 195, 247, 0.7),
-                inset 0 0 50px rgba(0, 0, 0, 0.4);
+                0 0 25px rgba(79, 195, 247, 0.8),
+                inset 0 0 20px rgba(79, 195, 247, 0.6);
             background:
                 radial-gradient(circle at center, #1a2434 0%, #121a24 100%),
-                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="2"/></svg>');
-            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/></svg>');
+            transition: transform 5s cubic-bezier(0.2, 0.8, 0.3, 1);
+        }
+
+        .wheel::after {
+            content: "";
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: #0a1929;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            box-shadow: 
+                inset 0 0 10px rgba(0, 0, 0, 0.7),
+                0 0 0 5px rgba(79, 195, 247, 0.8);
         }
 
         .segment {
@@ -90,31 +108,39 @@
             transform-origin: bottom right;
             left: 0;
             top: 0;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
             overflow: hidden;
-            background: rgba(74, 157, 227, 0.3);
             clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 50%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            transition: filter 0.5s ease;
+        }
+
+        .segment.selected {
+            filter: brightness(1.8);
+            box-shadow: inset 0 0 40px rgba(255, 255, 255, 0.6);
         }
 
         .segment:nth-child(odd) {
-            background: rgba(255, 126, 185, 0.3);
+            background: rgba(74, 157, 227, 0.6);
+        }
+
+        .segment:nth-child(even) {
+            background: rgba(255, 126, 185, 0.6);
         }
 
         .segment-text {
-            transform: rotate(22.5deg);
-            margin-bottom: 60px;
-            font-weight: bold;
+            position: absolute;
+            width: 150px;
             color: white;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-            font-size: 16px;
+            font-size: 22px;
+            font-weight: 800;
             text-align: center;
-            width: 120px;
-            font-weight: 600;
             line-height: 1.3;
-            transform-origin: bottom left;
+            transform: translate(-50%, -50%) rotate(var(--segment-rotation));
+            left: 130px;
+            top: 60px;
+            z-index: 2;
+            font-style: italic;
+            letter-spacing: 0.5px;
         }
 
         .pointer {
@@ -136,7 +162,7 @@
             color: white;
             border: none;
             padding: 15px 40px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 600;
             border-radius: 50px;
             cursor: pointer;
@@ -144,6 +170,7 @@
             transition: all 0.3s ease;
             margin-top: 20px;
             letter-spacing: 1px;
+            font-family: 'Cormorant Garamond', serif;
         }
 
         .spin-btn:hover {
@@ -186,6 +213,9 @@
             color: #4fc3f7;
             text-align: center;
             text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            min-height: 60px;
         }
 
         .answer {
@@ -199,6 +229,8 @@
             border-radius: 0 10px 10px 0;
             min-height: 100px;
             white-space: pre-wrap;
+            font-weight: 500;
+            letter-spacing: 0.3px;
         }
 
         .answer-cursor {
@@ -234,10 +266,22 @@
             animation: float 3s ease-in-out infinite;
         }
 
+        .category-name {
+            font-size: 2.2rem;
+            color: #f06292;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
         @media (max-width: 600px) {
             .wheel-container {
                 width: 300px;
                 height: 300px;
+            }
+
+            .wheel::after {
+                width: 60px;
+                height: 60px;
             }
 
             h1 {
@@ -245,9 +289,10 @@
             }
 
             .segment-text {
-                font-size: 14px;
-                margin-bottom: 40px;
-                width: 90px;
+                font-size: 18px;
+                width: 110px;
+                left: 100px;
+                top: 45px;
             }
 
             .result-container {
@@ -256,18 +301,29 @@
             }
 
             .question {
-                font-size: 1.4rem;
+                font-size: 1.5rem;
+            }
+            
+            .answer {
+                font-size: 1rem;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Колесо Вопросов</h1>
+        <h1>КОЛЕСО ВОПРОСОВ</h1>
 
         <div class="wheel-container" id="wheelContainer">
             <div class="wheel" id="wheel">
-                <!-- Сегменты колеса будут добавлены через JavaScript -->
+                <div class="segment" style="--segment-rotation: 0deg"><div class="segment-text">Любовь</div></div>
+                <div class="segment" style="--segment-rotation: -45deg"><div class="segment-text">Школа</div></div>
+                <div class="segment" style="--segment-rotation: -90deg"><div class="segment-text">Дружба</div></div>
+                <div class="segment" style="--segment-rotation: -135deg"><div class="segment-text">Дом</div></div>
+                <div class="segment" style="--segment-rotation: -180deg"><div class="segment-text">ИСПМ</div></div>
+                <div class="segment" style="--segment-rotation: -225deg"><div class="segment-text">Семья</div></div>
+                <div class="segment" style="--segment-rotation: -270deg"><div class="segment-text">Блог</div></div>
+                <div class="segment" style="--segment-rotation: -315deg"><div class="segment-text">ВУЗ</div></div>
             </div>
             <div class="pointer"></div>
         </div>
@@ -275,6 +331,7 @@
         <button class="spin-btn floating" id="spinBtn">КРУТИТЬ КОЛЕСО</button>
 
         <div class="result-container" id="resultContainer">
+            <div class="category-name" id="categoryName"></div>
             <div class="question" id="question"></div>
             <div class="answer" id="answer"></div>
         </div>
@@ -286,79 +343,65 @@
             const spinBtn = document.getElementById('spinBtn');
             const wheelContainer = document.getElementById('wheelContainer');
             const resultContainer = document.getElementById('resultContainer');
+            const categoryNameEl = document.getElementById('categoryName');
             const questionEl = document.getElementById('question');
             const answerEl = document.getElementById('answer');
+            const segments = document.querySelectorAll('.segment');
 
-            // Вопросы (одним словом)
-            const questions = [
-                "любовь",
-                "дружба",
-                "школа",
-                "университет",
-                "блог",
-                "испм",
-                "еда",
-                "город"
+            // Данные для колеса
+            const categories = ["Любовь", "Школа", "Дружба", "Дом", "ИСПМ", "Семья", "Блог", "ВУЗ"];
+            const fullQuestions = [
+                "Что такое любовь?",
+                "Какие воспоминания у вас связаны со школой?",
+                "Как вы понимаете дружбу?",
+                "Что для вас значит дом?",
+                "Что вы знаете об ИСПМ?",
+                "Какую роль играет семья в вашей жизни?",
+                "О чем бы вы вели свой блог?",
+                "Какое значение имеет ВУЗ в жизни человека?"
             ];
-
-            // Ответы на вопросы
             const answers = [
                 "Любовь - это самое сильное чувство, которое связывает людей. Она может быть романтической, родительской, дружеской или к любому объекту. Любовь вдохновляет, поддерживает и делает жизнь ярче.",
-                "Дружба - это особая связь между людьми, основанная на доверии, взаимопонимании и поддержке. Настоящие друзья всегда будут рядом в трудную минуту и разделят с вами радости жизни.",
                 "Школа - это важный этап в жизни каждого человека. Здесь мы получаем знания, учимся общаться, развиваем личность и готовимся к взрослой жизни. Школьные годы незабываемы и формируют наше будущее.",
-                "Университет - это следующий шаг после школы, где можно получить профессиональное образование. Здесь раскрываются таланты, формируются карьерные цели и создаются прочные дружеские связи.",
-                "Блог - это современный способ самовыражения и обмена информацией. Через блог можно делиться своими мыслями, опытом, знаниями и находить единомышленников по всему миру.",
+                "Дружба - это особая связь между людьми, основанная на доверии, взаимопонимании и поддержке. Настоящие друзья всегда будут рядом в трудную минуту и разделят с вами радости жизни.",
+                "Дом - это не просто место проживания, а пространство, где человек чувствует себя защищенным и комфортно. Дом отражает характер и ценности своих обитателей.",
                 "ИСПМ (Институт системного программирования) - это научно-образовательный центр, где разрабатываются передовые технологии в области программирования и информационных систем. Здесь рождаются инновации будущего.",
-                "Еда - это не просто способ утолить голод. Это целая культура, объединяющая людей, передающая традиции и дарящая удовольствие. Каждая кухня мира уникальна и отражает особенности региона.",
-                "Город - это сложный организм, где переплетаются судьбы тысяч людей. Здесь рождаются идеи, создаются шедевры, развиваются технологии и формируется будущее человечества."
+                "Семья - это основа общества, где человек получает поддержку, любовь и воспитание. Семейные ценности и традиции передаются из поколения в поколение, формируя личность.",
+                "Блог - это современный способ самовыражения и обмена информацией. Через блог можно делиться своими мыслями, опытом, знаниями и находить единомышленников по всему миру.",
+                "ВУЗ - это следующий шаг после школы, где можно получить профессиональное образование. Здесь раскрываются таланты, формируются карьерные цели и создаются прочные дружеские связи."
             ];
 
-            // Создание сегментов колеса
-            function createWheelSegments() {
-                const segmentAngle = 360 / questions.length;
+            const segmentAngle = 360 / segments.length;
+            let currentSegmentIndex = null;
+            let isSpinning = false;
 
-                questions.forEach((q, index) => {
-                    const segment = document.createElement('div');
-                    segment.className = 'segment';
-                    segment.style.transform = `rotate(${index * segmentAngle}deg)`;
+            // Инициализация сегментов
+            segments.forEach((segment, index) => {
+                segment.style.transform = `rotate(${index * segmentAngle}deg)`;
+            });
 
-                    const text = document.createElement('div');
-                    text.className = 'segment-text';
-                    text.textContent = q;
-
-                    segment.appendChild(text);
-                    wheel.appendChild(segment);
-                });
+            // Определение сегмента под стрелкой
+            function getSegmentUnderPointer(rotation) {
+                const normalizedRotation = (rotation % 360 + 360) % 360;
+                const segmentIndex = Math.floor(normalizedRotation / segmentAngle);
+                return segmentIndex % segments.length;
             }
 
-            createWheelSegments();
-
-            // Функция вращения колеса
-            function spinWheel() {
-                // Скрываем кнопку
-                spinBtn.classList.add('hidden');
-
-                // Генерируем случайный угол (5-10 полных оборотов + случайный сегмент)
-                const segmentAngle = 360 / questions.length;
-                const extraRotations = 5 + Math.floor(Math.random() * 6); // 5-10 полных оборотов
-                const randomSegment = Math.floor(Math.random() * questions.length);
-                const targetAngle = extraRotations * 360 + (360 - (randomSegment * segmentAngle + segmentAngle/2));
-
-                // Применяем вращение
-                wheel.style.transform = `rotate(${targetAngle}deg)`;
-
-                // После завершения вращения показываем результат
-                setTimeout(() => {
-                    showResult(randomSegment);
-                }, 4000);
+            // Подсветка сегмента
+            function highlightSegment(index) {
+                segments.forEach(segment => {
+                    segment.classList.remove('selected');
+                });
+                if (index !== null) {
+                    segments[index].classList.add('selected');
+                }
             }
 
             // Эффект печатания текста
-            function typeText(element, text, speed = 50) {
+            function typeText(element, text, speed = 100, callback) {
                 let i = 0;
                 element.innerHTML = '';
 
-                // Создаем курсор
                 const cursor = document.createElement('span');
                 cursor.className = 'answer-cursor';
                 element.appendChild(cursor);
@@ -369,34 +412,61 @@
                         i++;
                         setTimeout(type, speed);
                     } else {
-                        // Удаляем курсор после завершения печати
                         element.removeChild(cursor);
+                        if (callback) callback();
                     }
                 }
 
                 type();
             }
 
-            // Показ результата
-            function showResult(index) {
-                const question = questions[index];
-                const answer = answers[index];
+            // Функция вращения колеса
+            function spinWheel() {
+                if (isSpinning) return;
+                isSpinning = true;
+                
+                spinBtn.classList.add('hidden');
+                resultContainer.classList.remove('show');
+                categoryNameEl.textContent = '';
+                questionEl.textContent = '';
+                answerEl.textContent = '';
 
-                // Устанавливаем вопрос
-                questionEl.textContent = question;
+                const extraRotations = 5 + Math.floor(Math.random() * 6);
+                const randomSegment = Math.floor(Math.random() * categories.length);
+                const targetAngle = extraRotations * 360 + (360 - randomSegment * segmentAngle - segmentAngle/2);
 
-                // Начинаем плавное исчезновение колеса
-                wheelContainer.classList.add('fading');
+                // Плавное вращение с easing
+                wheel.style.transition = 'transform 5s cubic-bezier(0.2, 0.8, 0.3, 1)';
+                wheel.style.transform = `rotate(${targetAngle}deg)`;
 
-                // Показываем контейнер результата (вопрос поднимается вверх)
+                // После завершения вращения
                 setTimeout(() => {
-                    resultContainer.classList.add('show');
-
-                    // После появления вопроса показываем ответ с эффектом печатания
+                    currentSegmentIndex = getSegmentUnderPointer(targetAngle);
+                    highlightSegment(currentSegmentIndex);
+                    isSpinning = false;
+                    
+                    // Показываем результат после небольшой паузы
                     setTimeout(() => {
-                        typeText(answerEl, answer, 50); // Скорость печатания 50 мс
-                    }, 1500);
-                }, 2000);
+                        showResult(currentSegmentIndex);
+                    }, 500);
+                }, 5000);
+            }
+
+            // Показ результата
+            function showResult(segmentIndex) {
+                wheelContainer.classList.add('fading');
+                resultContainer.classList.add('show');
+                
+                // Печатаем текст для выбранной категории
+                typeText(categoryNameEl, categories[segmentIndex], 150, () => {
+                    setTimeout(() => {
+                        typeText(questionEl, fullQuestions[segmentIndex], 80, () => {
+                            setTimeout(() => {
+                                typeText(answerEl, answers[segmentIndex], 50);
+                            }, 500);
+                        });
+                    }, 500);
+                });
             }
 
             // Обработчик клика по кнопке
@@ -405,4 +475,3 @@
     </script>
 </body>
 </html>
-
