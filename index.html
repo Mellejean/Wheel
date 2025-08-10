@@ -380,10 +380,14 @@
                 segment.style.transform = `rotate(${index * segmentAngle}deg)`;
             });
 
-            // Определение сегмента под стрелкой
+            // Определение сегмента под стрелкой (исправленная версия)
             function getSegmentUnderPointer(rotation) {
-                const normalizedRotation = (rotation % 360 + 360) % 360;
-                const segmentIndex = Math.floor(normalizedRotation / segmentAngle);
+                // Нормализуем угол (0-360)
+                const normalizedRotation = (360 - (rotation % 360)) % 360;
+                // Вычисляем индекс сегмента (0-7) с учетом смещения
+                // Добавляем 22.5 градуса (половину сегмента), чтобы стрелка указывала на середину
+                const adjustedRotation = (normalizedRotation + segmentAngle/2) % 360;
+                const segmentIndex = Math.floor(adjustedRotation / segmentAngle);
                 return segmentIndex % segments.length;
             }
 
@@ -431,8 +435,13 @@
                 questionEl.textContent = '';
                 answerEl.textContent = '';
 
+                // Случайное количество полных оборотов (5-10)
                 const extraRotations = 5 + Math.floor(Math.random() * 6);
+                // Случайный выбор сегмента (0-7)
                 const randomSegment = Math.floor(Math.random() * categories.length);
+                
+                // Вычисляем угол для остановки на выбранном сегменте
+                // Стрелка будет указывать на середину сегмента
                 const targetAngle = extraRotations * 360 + (360 - randomSegment * segmentAngle - segmentAngle/2);
 
                 // Плавное вращение с easing
@@ -441,7 +450,13 @@
 
                 // После завершения вращения
                 setTimeout(() => {
-                    currentSegmentIndex = getSegmentUnderPointer(targetAngle);
+                    // Получаем текущий угол вращения
+                    const computedStyle = window.getComputedStyle(wheel);
+                    const matrix = new DOMMatrix(computedStyle.transform);
+                    const currentRotation = Math.atan2(matrix.b, matrix.a) * (180 / Math.PI);
+                    
+                    // Определяем сегмент под стрелкой (исправленная версия)
+                    currentSegmentIndex = getSegmentUnderPointer(currentRotation);
                     highlightSegment(currentSegmentIndex);
                     isSpinning = false;
                     
